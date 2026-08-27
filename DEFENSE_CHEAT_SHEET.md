@@ -22,4 +22,4 @@
 **Q: How would your database handle 10,000 concurrent deliveries happening at the exact same second?**
 *   **State:** Honestly, my current single-database design would likely bottleneck and slow down under that specific load.
 *   **Context:** I designed this for small to medium retailers doing 50-100 deliveries a day, not for a massive enterprise like Uber.
-*   **Evidence:** To fix this, I would need to research database sharding or switch to a distributed database like Cassandra. I don't have the exact numbers on when it would break, but I know it wouldn't handle 10,000 concurrent writes efficiently.
+*   **Evidence:** To fix this, I would need to research database sharding or switch to a distributed database like Cassandra. I don't have the exact numbers on when it would break, but I know it wouldn't handle 10,000 concurrent writes efficiently. For the assignment logic, I don't know the exact algorithm, but I would research third-party routing APIs like Mapbox or Google Maps to calculate the closest rider.
