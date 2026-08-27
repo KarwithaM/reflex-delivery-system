@@ -44,3 +44,29 @@ I created a `DEFENSE_CHEAT_SHEET.md` to script my answers using the SCE framewor
 - First timed dry run (speaking out loud): 15 mins
 - Journaling and committing: 10 mins
 - Buffer: 5 mins
+
+------------------------------------------------------------------------
+
+## Log Entry 03: Day 3 & 4 - Mock Panel and Final Rehearsal
+
+**Task:** Complete the mock panel cross-examination, refine answers based on feedback, and execute the final timed dry run.
+
+**Challenge / Blocker:** 
+During the mock panel, I realized that when asked a complex scaling question, I focused only on the database bottleneck and forgot to address the algorithmic logic for automated rider assignment. 
+
+**Resources Consulted:** 
+- PLP guidelines on the "Candor" category of cross-examination.
+- Mapbox and Google Maps API documentation for routing logic.
+
+**Decision & Resolution:** 
+I successfully used the "I don't know, but here's how I'd find out" framework for the scaling question, which felt much more confident than trying to bluff. 
+I updated my Defense Cheat Sheet to include both database sharding and third-party routing APIs. During my final dry run, I hit exactly 8 minutes and 15 seconds, well within the 10-minute limit.
+
+**Time Breakdown:**
+- Mock Panel Q&A practice: 20 mins
+- Refining the cheat sheet: 10 mins
+- Final timed dry run: 10 mins
+- Creating Timing Log and Demo Script: 15 mins
+- Journaling and committing: 10 mins
+
+-------------------------------------------------------------------------
