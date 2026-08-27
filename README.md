@@ -28,6 +28,7 @@ This repository contains the design and documentation for the Reflex case study:
 - **[TRADE_OFF_LOG.md](./TRADE_OFF_LOG.md)** - Analysis of architectural trade-offs and design decisions
 - **[DECK_STORYBOARD.md](./DECK_STORYBOARD.md)** - Executive presentation deck outline
 - **[BLOCKER_JOURNAL.md](./BLOCKER_JOURNAL.md)** - Learning journey and troubleshooting log
+- - **[Reflex_Presentation.pdf](./Reflex_Presentation.pdf)** - Executive presentation deck (5 slides)
 
 ##  Target Users
 1. **Retailer Staff** - Log delivery requests with customer name, phone, address, and item description
