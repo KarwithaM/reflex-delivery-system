@@ -30,7 +30,7 @@ A full-stack, real-time delivery dispatch application that integrates WhatsApp, 
 
 ### Live Links
 - **Frontend (Dashboard):** https://reflex-delivery-system-sage.vercel.app/
-- **Backend API:** https://reflex-delivery-system-sage.vercel.app/api/whatsapp
+- **Backend API:** https://reflex-delivery-system-sage.vercel.app/api/whatsapp *(Note: Visiting this URL directly returns "Verification failed" as expected, since it requires specific GET query parameters or a valid POST request from Meta with the correct verify token).*
 - **Rider Page:** https://reflex-delivery-system-sage.vercel.app/rider.html?id=1
 
 
