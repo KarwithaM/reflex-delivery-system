@@ -40,6 +40,8 @@ This repository contains the design and documentation for the Reflex case study:
 - **Phase 2:** Automated rider assignment, offline mobile app for riders
 - **Phase 3:** USSD integration for retailers without smartphones, GPS tracking
 
+-  **For detailed backend and API setup, see the [Backend README](BACKEND_README.md).**
+
 ## Case Study Context
 This project was developed as part of the PLP Software Engineering Readiness Sprint, focusing on system design, trade-off analysis, and executive presentation skills.
 
