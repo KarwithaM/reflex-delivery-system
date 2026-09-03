@@ -9,7 +9,7 @@ A full-stack, real-time delivery dispatch application that integrates WhatsApp, 
 - **Real-time Sync:** Changes made by riders instantly reflect on the dispatcher dashboard.
 
 ## Tech Stack
-- **Frontend:** HTML5, CSS3, Vanilla JavaScript
+- **Frontend:** HTML5, CSS3, Vanilla JavaScript, Vercel (Static Hosting)
 - **Backend:** Node.js (Vercel Serverless Functions)
 - **Database:** PostgreSQL (Supabase)
 - **APIs:** Meta WhatsApp Cloud API
@@ -21,10 +21,18 @@ A full-stack, real-time delivery dispatch application that integrates WhatsApp, 
 4. The Dispatcher Dashboard fetches the new order and displays it with a "WHATSAPP" badge.
 5. The dispatcher assigns a rider, who then updates the status via the mobile rider page.
 
-## ️ Setup & Deployment
+## ️ Setup
 - **Frontend:** Hosted locally via Python HTTP Server (or can be deployed to Vercel).
 - **Backend:** Deployed on Vercel using Environment Variables for Supabase credentials.
 - **Database:** Hosted on Supabase with Row Level Security (RLS) configured.
+
+##  Deployment
+
+### Live Links
+- **Frontend (Dashboard):** https://reflex-delivery-system-sage.vercel.app/
+- **Backend API:** https://reflex-delivery-system-sage.vercel.app/api/whatsapp
+- **Rider Page:** https://reflex-delivery-system-sage.vercel.app/rider.html?id=1
+
 
 ##  Screenshots
 - [Dispatcher Dashboard] <img width="1440" height="900" alt=" Dispatcher Dashboard (Main View 01)" src="https://github.com/user-attachments/assets/ca1d512c-c304-49f9-b5a2-380782d166f2" />
