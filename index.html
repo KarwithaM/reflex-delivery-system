@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflex Dispatcher Dashboard</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 1000px; margin: 0 auto; padding: 2rem; background-color: #f4f4f9; }
+        h1 { color: #333; margin-bottom: 0.5rem; }
+        .stats { background: white; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; display: flex; gap: 2rem; }
+        .stat-box { text-align: center; }
+        .stat-number { font-size: 2rem; font-weight: bold; color: #007bff; }
+        .stat-label { color: #666; font-size: 0.9rem; }
+        .order-card { background: white; padding: 1.5rem; margin-bottom: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 4px solid #007bff; }
+        .order-card.whatsapp { border-left-color: #25D366; }
+        .status { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
+        .pending { background-color: #fff3cd; color: #856404; }
+        .assigned { background-color: #d1ecf1; color: #0c5460; }
+        .delivered { background-color: #d4edda; color: #155724; }
+        .picked_up { background-color: #ffe69c; color: #856404; }
+        button { background-color: #007bff; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; margin-top: 0.5rem; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        .badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-left: 0.5rem; }
+        .badge-whatsapp { background-color: #25D366; color: white; }
+        .error-box { background-color: #ffe6e6; color: #d8000c; padding: 1rem; border: 1px solid #d8000c; border-radius: 4px; }
+        .last-updated { color: #666; font-size: 0.85rem; margin-top: 1rem; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <h1>📦 Reflex Dispatcher Dashboard</h1>
+    
+    <div class="stats">
+        <div class="stat-box">
+            <div class="stat-number" id="total-orders">0</div>
+            <div class="stat-label">Total Orders</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="pending-orders">0</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="assigned-orders">0</div>
+            <div class="stat-label">Assigned</div>
+        </div>
+    </div>
+
+    <div id="orders-container">Loading orders...</div>
+    <div class="last-updated">Last updated: <span id="timestamp">-</span></div>
+
+    <script>
+        const supabaseUrl = 'https://klwjtxwgokxeiuoytqmo.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtsd2p0eHdnb2t4ZWl1b3l0cW1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzcyNjUsImV4cCI6MjEwMzg1MzI2NX0.kmy3e59IrnKBTvi7nGHWqrVHonywc8Q_NAWi-sKiWxQ';
+        
+        let supabaseClient; 
+        if (typeof supabase !== 'undefined') {
+            supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+            loadOrders();
+            // Auto-refresh every 30 seconds
+            setInterval(loadOrders, 30000);
+        } else {
+            document.getElementById('orders-container').innerHTML = '<div class="error-box">ERROR: Could not load Supabase library.</div>';
+        }
+
+        async function loadOrders() {
+            const container = document.getElementById('orders-container');
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .select('*, retailers(name)')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw new Error(error.message);
+
+                container.innerHTML = '';
+
+                if (data.length === 0) {
+                    container.innerHTML = '<p>No orders found in the database.</p>';
+                    updateStats(0, 0, 0);
+                    return;
+                }
+
+                // Count stats
+                let pending = 0, assigned = 0;
+                data.forEach(order => {
+                    if (order.status === 'pending') pending++;
+                    if (order.status === 'assigned') assigned++;
+                });
+                updateStats(data.length, pending, assigned);
+
+                // Display orders
+                data.forEach(order => {
+                    const isWhatsApp = order.customer_phone && order.customer_phone.startsWith('163');
+                    const card = document.createElement('div');
+                    card.className = `order-card ${isWhatsApp ? 'whatsapp' : ''}`;
+                    
+                    let retailerName = 'Unknown';
+                    if (order.retailers) {
+                        retailerName = order.retailers.name;
+                    } else if (order.retailer_id === 1) {
+                        retailerName = 'Nairobi Electronics';
+                    }
+
+                    card.innerHTML = `
+                        <h3>${order.customer_name} - ${order.item_description} ${isWhatsApp ? '<span class="badge badge-whatsapp">WHATSAPP</span>' : ''}</h3>
+                        <p><strong>Shop:</strong> ${retailerName}</p>
+                        <p><strong>Address:</strong> ${order.address}</p>
+                        <p><strong>Phone:</strong> <a href="tel:${order.customer_phone}">${order.customer_phone}</a></p>
+                        <span class="status ${order.status}">${order.status.toUpperCase().replace('_', ' ')}</span>
+                        ${order.status === 'pending' ? `<br><button onclick="assignRider(${order.id})">Assign Rider</button>` : ''}
+                    `;
+                    container.appendChild(card);
+                });
+
+                // Update timestamp
+                document.getElementById('timestamp').textContent = new Date().toLocaleTimeString();
+
+            } catch (err) {
+                container.innerHTML = `<div class="error-box">🚨 CONNECTION ERROR:<br>${err.message}</div>`;
+            }
+        }
+
+        function updateStats(total, pending, assigned) {
+            document.getElementById('total-orders').textContent = total;
+            document.getElementById('pending-orders').textContent = pending;
+            document.getElementById('assigned-orders').textContent = assigned;
+        }
+
+        async function assignRider(orderId) {
+            const riderIdToAssign = 1; 
+            const confirmAssign = confirm(`Assign this order to John Boda (Rider #1)?`);
+            if (!confirmAssign) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('orders')
+                    .update({ status: 'assigned', rider_id: riderIdToAssign })
+                    .eq('id', orderId);
+
+                if (error) throw new Error(error.message);
+
+                alert("✅ Order assigned successfully!");
+                loadOrders(); 
+
+            } catch (err) {
+                alert("❌ Error assigning order: " + err.message);
+            }
+        }
+    </script>
+</body>
+</html>

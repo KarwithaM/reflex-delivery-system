@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rider View - Reflex (Direct Test)</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 1rem; background-color: #f4f4f9; }
+        .card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 1rem; }
+        h2 { margin-top: 0; color: #333; }
+        p { margin: 0.5rem 0; color: #555; }
+        .status-badge { display: inline-block; padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; margin-bottom: 1rem; }
+        .assigned { background-color: #d1ecf1; color: #0c5460; }
+        .picked_up { background-color: #fff3cd; color: #856404; }
+        .delivered { background-color: #d4edda; color: #155724; }
+        .btn { display: block; width: 100%; padding: 1rem; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-bottom: 0.5rem; color: white; }
+        .btn-pickup { background-color: #ffc107; color: #333; }
+        .btn-deliver { background-color: #28a745; }
+        .error-box { background-color: #ffe6e6; color: #d8000c; padding: 1rem; border: 1px solid #d8000c; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <div style="text-align:center; padding: 2rem;"> Bypassing library... Talking directly to database...</div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://klwjtxwgokxeiuoytqmo.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtsd2p0eHdnb2t4ZWl1b3l0cW1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzcyNjUsImV4cCI6MjEwMzg1MzI2NX0.kmy3e59IrnKBTvi7nGHWqrVHonywc8Q_NAWi-sKiWxQ';
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('id');
+        const app = document.getElementById('app');
+
+        async function loadOrderDirect() {
+            if (!orderId) {
+                app.innerHTML = '<div class="error-box">❌ No Order ID in URL</div>';
+                return;
+            }
+
+            // 1. Construct the direct REST API URL
+            const url = `${supabaseUrl}/rest/v1/orders?id=eq.${orderId}`;
+
+            try {
+                // 2. Use the browser's built-in fetch command
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': supabaseKey,
+                        'Authorization': `Bearer ${supabaseKey}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // 3. Check for HTTP errors (like 401 Unauthorized or 404 Not Found)
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                // 4. Check if we actually got data
+                if (data.length === 0) {
+                    throw new Error("Order not found. (Check if Row Level Security is blocking access)");
+                }
+
+                const order = data[0];
+
+                // 5. Render the UI
+                app.innerHTML = `
+                    <div class="card">
+                        <span class="status-badge ${order.status}">${order.status.toUpperCase().replace('_', ' ')}</span>
+                        <h2>📦 ${order.item_description}</h2>
+                        <p><strong>Customer:</strong> ${order.customer_name}</p>
+                        <p><strong>Phone:</strong> <a href="tel:${order.customer_phone}">${order.customer_phone}</a></p>
+                        <p><strong>Address:</strong> ${order.address}</p>
+                        <p><strong>Retailer ID:</strong> ${order.retailer_id}</p>
+                    </div>
+                    <button class="btn btn-pickup" onclick="updateStatus('picked_up', ${order.id})"> Mark as Picked Up</button>
+                    <button class="btn btn-deliver" onclick="updateStatus('delivered', ${order.id})">✅ Mark as Delivered</button>
+                `;
+
+            } catch (err) {
+                app.innerHTML = `<div class="error-box">🚨 DIRECT CONNECTION FAILED:<br>${err.message}</div>`;
+            }
+        }
+
+        async function updateStatus(newStatus, id) {
+            const url = `${supabaseUrl}/rest/v1/orders?id=eq.${id}`;
+            try {
+                const response = await fetch(url, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': supabaseKey,
+                        'Authorization': `Bearer ${supabaseKey}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                alert(`✅ Updated to ${newStatus}`);
+                loadOrderDirect();
+            } catch (err) {
+                alert(' Error: ' + err.message);
+            }
+        }
+
+        // Start the test
+        loadOrderDirect();
+    </script>
+</body>
+</html>
