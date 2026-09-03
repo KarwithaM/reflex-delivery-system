@@ -29,39 +29,43 @@ module.exports = async (req, res) => {
         try {
             const body = req.body;
             
-            // Dig into the complex JSON Meta sends us to find the message
+            // Dig into the complex JSON Meta sends us
             const changes = body.entry?.[0]?.changes?.[0]?.value;
             const messages = changes?.messages;
 
             if (messages && messages.length > 0) {
                 const message = messages[0];
-                const senderPhone = message.from; // The retailer's WhatsApp number
+                
+                // Extract the REAL data from the payload
+                const senderPhone = message.from; 
                 const messageText = message.text?.body || "No text provided";
+                const senderName = message.contacts?.[0]?.profile?.name || "Unknown Retailer";
 
-                console.log(` New WhatsApp order from ${senderPhone}: ${messageText}`);
+                console.log(` New Order from ${senderName} (${senderPhone}): "${messageText}"`);
 
-                // Save the order directly to our Supabase database!
+                // Save to Supabase with REAL data!
                 const { error } = await supabase.from('orders').insert({
-                    retailer_id: 1, // For now, we assign all WhatsApp orders to "Nairobi Electronics"
-                    customer_name: "WhatsApp Customer",
-                    customer_phone: senderPhone,
-                    address: "To be confirmed via chat",
-                    item_description: messageText,
+                    retailer_id: 1, // Assigning to Nairobi Electronics for now
+                    customer_name: senderName, // Real name from WhatsApp profile!
+                    customer_phone: senderPhone, // Real phone number!
+                    address: "Pending confirmation via chat",
+                    item_description: messageText, // The actual order text!
                     status: 'pending'
                 });
 
                 if (error) {
-                    console.error("❌ Supabase Error:", error);
+                    console.error("❌ Supabase Error:", error.message);
+                    return res.status(500).send("DATABASE_ERROR");
                 } else {
-                    console.log("✅ Order saved to database!");
+                    console.log("✅ Order saved successfully!");
                 }
             }
 
-            // Meta requires us to send a 200 OK immediately so they know we got it
+            // Always return 200 OK to Meta so they stop retrying
             return res.status(200).send("EVENT_RECEIVED");
             
         } catch (err) {
-            console.error("Server Error:", err);
+            console.error("Server Error:", err.message);
             return res.status(500).send("SERVER_ERROR");
         }
     }
