@@ -1,5 +1,11 @@
 # Reflex: Delivery Management System for Kenyan Retailers
 
+###  Live Demo
+- **Dispatcher Dashboard:** https://reflex-delivery-system-sage.vercel.app/
+- **Rider Mobile View:** https://reflex-delivery-system-sage.vercel.app/rider.html?id=1
+
+A full-stack, real-time delivery dispatch application that integrates WhatsApp, a cloud database, and a live dispatcher dashboard.
+
 ##  The Problem
 Small Kenyan retailers (electronics shops, pharmacies, hardware stores) currently coordinate deliveries over WhatsApp and phone calls. This creates:
 - No record of who's assigned to what delivery
