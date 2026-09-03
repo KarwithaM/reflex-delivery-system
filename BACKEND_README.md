@@ -44,4 +44,4 @@ A full-stack, real-time delivery dispatch application that integrates WhatsApp, 
 
 - [WhatsApp Integration] <img width="1242" height="2208" alt="WhatsApp Integration" src="https://github.com/user-attachments/assets/826c7d8b-4e30-469c-ae8c-88b7e963dea2" />
 
-- [Vercel Deployment] <img width="1440" height="900" alt="Vercel Deployment" src="https://github.com/user-attachments/assets/1c4be085-8260-4aff-ba96-7141b59410c2" />
+- [Vercel Deployment] <img width="1440" height="900" alt="Vercel Deployment Final" src="https://github.com/user-attachments/assets/04d8c17e-1151-490f-864b-6f83a4d4c866" />
